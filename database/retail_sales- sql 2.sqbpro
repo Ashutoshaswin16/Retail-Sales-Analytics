@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="retail_sales.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1510"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="retail_sales" custom_title="0" dock_id="1" table="4,12:mainretail_sales"/><dock_state state="000000ff00000000fd00000001000000020000024900000211fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000000002490000011800ffffff000002490000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">SELECT
+    State,
+    ROUND(SUM(&quot;Sales&quot;), 2) AS Total_Sales
+FROM retail_sales
+GROUP BY State
+ORDER BY Total_Sales DESC
+LIMIT 10;
+
+SELECT
+    &quot;Sub-Category&quot;,
+    ROUND(SUM(&quot;Sales&quot;),2) AS Total_Sales
+FROM retail_sales
+GROUP BY &quot;Sub-Category&quot;
+ORDER BY Total_Sales DESC
+LIMIT 10;
+
+SELECT
+    &quot;Sub-Category&quot;,
+    ROUND(SUM(&quot;Profit&quot;),2) AS Total_Profit
+FROM retail_sales
+GROUP BY &quot;Sub-Category&quot;
+ORDER BY Total_Profit DESC
+LIMIT 10;
+
+SELECT
+    &quot;Sub-Category&quot;,
+    ROUND(SUM(&quot;Profit&quot;),2) AS Total_Profit
+FROM retail_sales
+GROUP BY &quot;Sub-Category&quot;
+HAVING SUM(&quot;Profit&quot;) &lt; 0
+ORDER BY Total_Profit;
+
+SELECT
+    ROUND(SUM(&quot;Sales&quot;), 2) AS West_Sales
+FROM retail_sales
+WHERE Region = 'West';
+
+SELECT
+    ROUND(SUM(&quot;Sales&quot;), 2) AS Technology_Sales
+FROM retail_sales
+WHERE Category = 'Technology';
+
+SELECT
+    Category,
+    &quot;Sub-Category&quot;,
+    &quot;Sales&quot;,
+    Discount,
+    Profit
+FROM retail_sales
+WHERE Discount &gt; 0.20;
+
+SELECT
+    Category,
+    &quot;Sub-Category&quot;,
+    Region,
+    Sales,
+    Profit
+FROM retail_sales
+WHERE Category = 'Technology'
+AND Region = 'West';
+
+SELECT
+    Region,
+    Sales,
+    Profit
+FROM retail_sales
+WHERE Region = 'East'
+OR Region = 'West';
+
+SELECT
+    Region,
+    Sales
+FROM retail_sales
+WHERE Region IN ('East','West','South');
+
+SELECT
+    Sales,
+    Profit,
+    Category
+FROM retail_sales
+WHERE Sales BETWEEN 500 AND 1000;
+
+SELECT
+    City,
+    Sales
+FROM retail_sales
+WHERE City LIKE 'San%';
+
+-- =====================================
+-- ADVANCED SQL QUERIES
+-- =====================================
+
+SELECT
+    Category,
+    &quot;Sub-Category&quot;,
+    Sales,
+    Profit,
+    CASE
+        WHEN Profit &gt; 100 THEN 'High Profit'
+        WHEN Profit &gt; 0 THEN 'Profit'
+        ELSE 'Loss'
+    END AS Profit_Status
+FROM retail_sales;
+
+SELECT
+    CASE
+        WHEN Profit &gt; 100 THEN 'High Profit'
+        WHEN Profit &gt; 0 THEN 'Profit'
+        ELSE 'Loss'
+    END AS Profit_Status,
+    COUNT(*) AS Orders
+FROM retail_sales
+GROUP BY Profit_Status;
+
+SELECT
+    State,
+    ROUND(SUM(&quot;Sales&quot;),2) AS Total_Sales,
+    RANK() OVER (
+        ORDER BY SUM(&quot;Sales&quot;) DESC
+    ) AS Sales_Rank
+FROM retail_sales
+GROUP BY State;
+
+SELECT
+    State,
+    ROUND(SUM(&quot;Sales&quot;),2) AS Total_Sales,
+    DENSE_RANK() OVER (
+        ORDER BY SUM(&quot;Sales&quot;) DESC
+    ) AS Sales_Rank
+FROM retail_sales
+GROUP BY State;
+
+SELECT
+    State,
+    ROUND(SUM(&quot;Sales&quot;),2) AS Total_Sales,
+    ROW_NUMBER() OVER (
+        ORDER BY SUM(&quot;Sales&quot;) DESC
+    ) AS Row_Num
+FROM retail_sales
+GROUP BY State;
+
+-- =====================================
+-- Common Table Expression (CTE)
+-- =====================================
+
+WITH StateSales AS (
+    SELECT
+        State,
+        ROUND(SUM(&quot;Sales&quot;), 2) AS Total_Sales
+    FROM retail_sales
+    GROUP BY State
+)
+
+SELECT *
+FROM StateSales
+WHERE Total_Sales &gt; 100000
+ORDER BY Total_Sales DESC;
+
+-- =====================================
+-- Subquery
+-- =====================================
+
+SELECT
+    Category,
+    &quot;Sub-Category&quot;,
+    Sales,
+    Profit
+FROM retail_sales
+WHERE Sales &gt;
+(
+    SELECT AVG(Sales)
+    FROM retail_sales
+);
+
+SELECT
+    Category,
+    &quot;Sub-Category&quot;,
+    Profit
+FROM retail_sales
+WHERE Profit &gt;
+(
+    SELECT AVG(Profit)
+    FROM retail_sales
+);</sql><current_tab id="0"/></tab_sql></sqlb_project>
